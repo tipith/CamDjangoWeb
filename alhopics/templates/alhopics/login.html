@@ -1,0 +1,57 @@
+{% load static %}
+
+<!DOCTYPE html>
+<meta charset="utf-8"/>
+
+<html>
+
+<head>
+  <title>AlhoCam</title>
+  <link rel="stylesheet" type="text/css" href="{% static "alho_style.css" %}">
+</head>
+
+<body class="small login">
+
+    <div style="position:relative; height: 100%; width:100%;">
+        <img src="../static/banner.jpg" alt="some_text" style="width: 100%; z-index: 0; position:absolute; top:0; left:0; right:0; bottom:0; margin:auto">
+    </div>
+
+    <div id="container">
+        <div id="content">
+            <div class="wrapper">
+                {% if form.errors %}
+                <p>Käyttäjätunnus ja salasana eivät täsmää. Yritä uudelleen</p>
+                {% endif %}
+
+                {% if next %}
+                    {% if user.is_authenticated %}
+                    <p>Käyttäjätunnuksella ei ole oikeutta sivustolle</p>
+                    {% else %}
+                    <h2>Kirjaudu sivustolle</h2>
+                    {% endif %}
+                {% endif %}
+
+                <form method="post" action="{% url 'login' %}">
+                    {% csrf_token %}
+                    <table class="login" style="margin-left: auto; margin-right: auto;">
+                        <tr>
+                            <td><p class="mtop0 mbottom025"><strong><label for="email">Käyttäjä</label></strong></p>
+                                {{ form.username }}</td>
+                        </tr>
+                        <tr>
+                            <td><p class="mtop05 mbottom025"><strong><label for="password">Salasana</label></strong></p>
+                                {{ form.password }}</td>
+                        </tr>
+                    </table>
+
+                    <tr>
+                        <td style="padding-top: 10px;"><input class="public-button" type="submit" tabindex="4" value="Kirjaudu" /></td>
+                    </tr>
+                    <input type="hidden" name="next" value="{{ next }}" />
+                </form>
+            </div> <!-- wrapper -->
+        </div> <!-- content -->
+    </div> <!-- container -->
+</body>
+
+</html>

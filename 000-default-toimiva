@@ -1,0 +1,40 @@
+WSGIPythonPath /home/pihlstro/projects/alhoweb/alhoweb/:/home/pihlstro/.pyenv/versions/2.7.12/lib/python2.7/site-packages/
+
+<VirtualHost *:80>
+        ServerAdmin webmaster@localhost
+
+        DocumentRoot /var/www
+        <Directory />
+                Options FollowSymLinks
+                AllowOverride None
+        </Directory>
+
+        WSGIDaemonProcess alho.com python-path=/home/pihlstro/projects/alhoweb/alhoweb
+        WSGIProcessGroup alho.com
+        WSGIApplicationGroup alho.com
+        WSGIScriptAlias / /home/pihlstro/projects/alhoweb/alhoweb/wsgi.py process-group=alho.com
+
+        Alias /static/rest_framework/ /usr/local/lib/python2.7/dist-packages/rest_framework/static/rest_framework/
+        Alias /static/admin/ /usr/local/lib/python2.7/dist-packages/django/contrib/admin/static/admin/
+        Alias /static/ /home/pihlstro/projects/alhoweb/alhopics/static/
+
+        <Directory /home/pihlstro/projects/alhoweb/alhopics/static/>
+                Order deny,allow
+                Allow from all
+        </Directory>
+
+        #<Directory /home/pihlstro/projects/alhoweb/alhopics/static/data/>
+        <Files *.jpg>
+                XSendFile On
+                XSendFilePath /home/pihlstro/projects/alhoweb/alhopics/static/data/
+                SetEnv MOD_X_SENDFILE_ENABLED 1
+        </Files>
+        #</Directory>
+
+        ErrorLog ${APACHE_LOG_DIR}/error.log
+
+        # Possible values include: debug, info, notice, warn, error, crit, alert, emerg.
+        LogLevel warn
+
+        CustomLog ${APACHE_LOG_DIR}/access.log combined
+</VirtualHost>

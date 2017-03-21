@@ -1,0 +1,59 @@
+{% load static %}
+
+<!DOCTYPE html>
+<meta charset="utf-8"/>
+
+<html>
+
+<head>
+  <title>AlhoCam</title>
+  <link rel="stylesheet" type="text/css" href="{% static "alho_style.css" %}">
+  <link rel="stylesheet" href="//code.jquery.com/ui/1.12.0/themes/base/jquery-ui.css">
+  <script src="https://code.jquery.com/jquery-1.12.4.js"></script>
+  <script src="https://code.jquery.com/ui/1.12.0/jquery-ui.js"></script>
+</head>
+
+<body>
+  {% block content %}{% endblock %}
+  {% include "alhopics/picturelist.html" %}
+</body>
+
+<script src="{% static "alhoscript.js" %}"></script>
+
+<script>
+  var current_idx      = { {% for camid in cameras %} {{ camid }}: -1,{% endfor %} };
+  var images           = { {% for camid in cameras %} {{ camid }}: [],{% endfor %} };
+  var last_valid_start = { {% for camid in cameras %} {{ camid }}: -1,{% endfor %} };
+  var last_valid_end   = { {% for camid in cameras %} {{ camid }}: -1,{% endfor %} };
+  var preload_img      = { {% for camid in cameras %} {{ camid }}: new Array(),{% endfor %} };
+
+  function start() {
+    {% for camid in cameras %}updateDates({{ camid }}, new Date(), "prev", "{{ type }}");
+    {% endfor %}
+  }
+  {% for camid in cameras %}
+  $(function()
+  {
+    $("#cam{{ camid }}_datepicker").datepicker({
+        dateFormat: 'yy-mm-dd',
+        onSelect: function(date) {
+          updateDates({{ camid }}, new Date(date), "prev", "{{ type }}");
+        },
+    });
+  });
+  {% endfor %}
+
+  function getPreviousImages(cam)
+  {
+    updateDates(cam, last_valid_start[cam], "prev", "{{ type }}");
+  }
+
+  function getNextImages(cam)
+  {
+    updateDates(cam, last_valid_end[cam], "next", "{{ type }}");
+  }
+
+  window.onload = start();
+</script>
+
+</html>

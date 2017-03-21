@@ -1,0 +1,326 @@
+/*
+ * Top menu
+ */
+ul {
+    list-style-type: none;
+    margin: 0;
+    padding: 0;
+    overflow: hidden;
+    background-color: #333;
+}
+
+li {
+    float: left;
+    border-right:1px solid #bbb;
+}
+
+li:last-child {
+    border-right: none;
+}
+
+/*li a:not(.logout) {*/
+li a {
+    display: block;
+    color: white;
+    text-align: center;
+    padding: 14px 16px;
+    text-decoration: none;
+}
+
+li a:hover:not(.active) {
+    background-color: #111;
+}
+
+.active {
+    background-color: #4CAF50;
+}
+
+.logout_container {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+.logout_text {
+    text-align: center;
+    color: white;
+}
+
+.logout_link {
+    text-align: center;
+    display: inline;
+    color: green;
+    padding: 0px 0px;
+}
+
+html, body
+{
+    height: 100%;
+    width: 100%;
+    margin: 0;
+    padding: 0;
+}
+
+/* 
+ * Back & forward button
+ */
+.container {
+  display: flex;
+}
+
+.fixed {
+    width: 200px;
+    text-align: center;
+}
+
+.flex-item {
+    flex-grow: 1;
+}
+
+table.centre-align {
+    padding: 10px;
+    border: 1px dashed gray;
+    text-align: center;
+    vertical-align: middle;
+    margin-left:auto;
+    margin-right:auto;
+    background-color: #f3f3f3;
+}
+
+/*
+ * Style for image page
+ */
+.img_background {
+    background-color:#F2F2F2; 
+    overflow: auto; 
+    display: inline-block; 
+    padding: 5px;
+}
+
+td.img_vert {
+    vertical-align: top;
+}
+
+td.img_selector {
+    padding-left: 12px; 
+    margin-left: 5px; 
+    position: relative;
+}
+
+.img_area {
+    width: 820px; 
+    height: 616px; 
+    display: block; 
+    border: 0;
+    vertical-align: top;
+}
+
+.img_dates {
+    border-collapse:collapse; 
+    padding:0px; 
+    margin:0px
+}
+
+
+/* all stuff related to login and logout screens, no idea how all works */
+body {
+    padding: 0;
+    margin: 0;
+    text-align: center;
+    font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+    font-size: 13px;
+    line-height: 20px;
+}
+
+table.center {
+    margin-left:auto;
+    margin-right:auto;
+}
+
+div, ul, li, h1, h2, h3, h4, h5 {
+    margin: 0;
+    padding: 0;
+}
+
+a {
+    text-decoration: none;
+}
+
+h1 {
+    font-weight: normal;
+    text-align: center;
+}
+
+div.clear {
+    clear: both;
+    height: 1px;
+    line-height: 1px;
+    font-size: 1px;
+}
+
+body.small #wrapper {
+    text-align: left;
+    margin: 0 auto;
+}
+
+body.small #header {
+    margin-bottom: 30px;
+    padding: 40px 0 0 0;
+    border: none;
+    background: none;
+}
+
+body.small #container {
+    border-radius: 6px;
+    behavior: url(/_pie/PIE.htc);
+}
+
+body.small #header h1 {
+    margin: 0 30px;
+}
+
+body.small #content {
+    padding: 25px 30px 20px 30px;
+}
+
+body.small #content h2 {
+    font-size: 18px;
+}
+body.small #content a {
+    color: #36808e;
+    border-bottom: 1px solid #d0e8e7;
+}
+
+body.small #content a:hover {
+    background: #deefee;
+    text-decoration: none;
+}
+
+table.login {
+    margin: 5px auto;
+}
+
+table.login td {
+}
+
+/* taustaväri */
+html, body {
+    background: #f6f4ef; 
+    background: #d0d0d0; 
+}
+
+/* laatikko loginin ympärillä */
+body.small #container { 
+    background: #f7f6f3; 
+    border: 1px solid #e7e5e0; 
+}
+
+.wrapper {
+    text-align: left;
+    margin: 0 auto;
+    width: 940px;
+}
+
+#content {
+    position: relative;
+}
+
+#container, #header {
+    top: 50%;
+    right: 20%;
+    width: 20em;
+    height: 18em;
+    margin-top: -9em; /*set to a negative number 1/2 of your height*/
+    margin-left: 10em; /*set to a negative number 1/2 of your width*/
+    border: 1px solid #ccc;
+    background-color: #f3f3f3;
+    position: fixed;
+}
+
+body.login #header { width: 420px; }
+body.login #header h1 a { width: 320px; } /**/
+body.login #container { width: 460px; }
+body.login .wrapper { width: 250px; }
+
+.smalltxt { font-size: 11px; }
+
+span.bar {
+  padding: 0 4px;
+  color: #999;
+}
+
+.mtop3 { margin-top: 30px !important; }
+.mtop2 { margin-top: 20px !important; }
+.mtop15 { margin-top: 15px !important; }
+.mtop1 { margin-top: 10px !important; }
+.mtop05 { margin-top: 5px !important; }
+.mtop025 { margin-top: 5px !important; }
+.mtop0 { margin-top: 0 !important; }
+.mbottom3 { margin-bottom: 30px !important; }
+.mbottom2 { margin-bottom: 20px !important; }
+.mbottom15 { margin-bottom: 15px !important; }
+.mbottom1 { margin-bottom: 10px !important; }
+.mbottom075 { margin-bottom: 5px !important; }
+.mbottom05 { margin-bottom: 5px !important; }
+.mbottom025 { margin-bottom: 5px !important; }
+.mbottom0 { margin-bottom: 0 !important; }
+.mvert2 { margin: 20px 0 !important; }
+.mvert15 { margin-top: 15px !important; margin-bottom: 15px !important; }
+.mvert1 { margin-top: 10px !important; margin-bottom: 10px !important; }
+.mvert075 { margin-top: 10px !important; margin-bottom: 10px !important; }
+.mvert05 { margin-top: 5px !important; margin-bottom: 5px !important; }
+.mvert025 { margin-top: 5px !important; margin-bottom: 5px !important; }
+.mvert0 { margin-top: 0 !important; margin-bottom: 0 !important; }
+
+.aleft { text-align: left !important; }
+.acenter { text-align: center !important; }
+
+.highlight1 { background: #ffa;}
+
+input.public-button {
+    font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+    font-size: 13px;
+    vertical-align: top;
+    padding: 6px 14px 6px 14px;
+    border: 2px solid #a2a2a2;
+    color: #444;
+    cursor: pointer;
+    -webkit-border-radius: 5px;
+    -moz-border-radius: 5px;
+    border-radius: 5px;
+    background: -webkit-linear-gradient(#fff, #e5e5e5);
+    background: -moz-linear-gradient(#fff, #e5e5e5);
+    background: -ms-linear-gradient(#fff, #e5e5e5);
+    background: -o-linear-gradient(#fff, #e5e5e5);
+    background: linear-gradient(#fff, #e5e5e5);
+    -pie-background: linear-gradient(#fff, #e5e5e5);
+    position: relative;
+    behavior: url(/_pie/PIE.htc);
+}
+
+#id_username {
+    width: 250px !important;
+    color: #515348;
+    font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+    border: 1px solid #aaa;
+    padding: 7px;
+    box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.1);
+    font-size: 13px;
+    border-radius: 3px;
+    position: relative;
+    behavior: url(/_pie/PIE.htc);
+}
+
+#id_password {
+    width: 250px !important;
+    color: #515348;
+    font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+    border: 1px solid #aaa;
+    padding: 7px;
+    box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.1);
+    font-size: 13px;
+    border-radius: 3px;
+    position: relative;
+    behavior: url(/_pie/PIE.htc);
+}
