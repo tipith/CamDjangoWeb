@@ -1,0 +1,7 @@
+*.pyc
+logs/
+mediastuff/
+alhopics/static/data
+alhoweb/settings.py
+.idea/
+db.sqlite3
