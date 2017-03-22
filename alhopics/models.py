@@ -31,7 +31,6 @@ class Camera(models.Model):
         managed = False
         db_table = 'Camera'
         app_label = 'pictures'
-        app_label = 'pictures'
 
 
 class Lightcontrol(models.Model):
@@ -87,4 +86,16 @@ class Picturemovement(models.Model):
     class Meta:
         managed = False
         db_table = 'PictureMovement'
+        app_label = 'pictures'
+
+
+class Rpitemperature(models.Model):
+    idrpitemperature = models.AutoField(db_column='idRpiTemperature', primary_key=True)  # Field name made lowercase.
+    timestamp = models.DateTimeField(db_column='Timestamp', blank=True, null=True)  # Field name made lowercase.
+    idcamera = models.ForeignKey(Camera, models.DO_NOTHING, db_column='idCamera', blank=True, null=True)  # Field name made lowercase.
+    temperature = models.DecimalField(db_column='Temperature', max_digits=5, decimal_places=2, blank=True, null=True)  # Field name made lowercase.
+
+    class Meta:
+        managed = False
+        db_table = 'RpiTemperature'
         app_label = 'pictures'

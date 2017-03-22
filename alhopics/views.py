@@ -69,6 +69,12 @@ def movement(request):
     return render(request, 'alhopics/movement.html', context)
 
 
+@login_required
+def graph(request):
+    context = {'user': request.user}
+    return render(request, 'alhopics/graph.html', context)
+
+
 class PictureSerializer(serializers.ModelSerializer):
     class Meta:
         model = Picture

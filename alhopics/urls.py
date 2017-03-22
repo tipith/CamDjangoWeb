@@ -2,12 +2,14 @@ from django.conf.urls import url
 from rest_framework.urlpatterns import format_suffix_patterns
 
 from . import views
-
+from . import charts
 
 urlpatterns = [
     url(r'^$', views.cameras, name='cameras'),
     url(r'^event$', views.event, name='event'),
     url(r'^movement$', views.movement, name='movement'),
+    url(r'^graph$', views.graph, name='graph'),
+    url(r'^charts/rpi_temp.png$', charts.rpi_temp, name='rpi_temp'),
     url(r'^static/data/(?P<filename>.*)$', views.retrieve_file),
     #url(r'^static/(?P<filename>.*)$', views.retrieve_file_all),
     url(r'^api/pictures$', views.PictureList.as_view()),
