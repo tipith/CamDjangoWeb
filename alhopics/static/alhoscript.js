@@ -30,7 +30,7 @@
       data: { format: 'json', type: "light" },
       success: function(response)
       {
-        console.log("executed: " + response);
+        console.log("update light events response: " + response);
         buildHtmlTable(response, "#lightcontrol");
       }
     });
@@ -44,21 +44,22 @@
       data: { format: 'json', type: "movement" },
       success: function(response)
       {
-        console.log("executed: " + response);
+        console.log("update movement events response: " + response);
         buildHtmlTable(response, "#movement");
       }
     });
   }
 
-  function lightsOn()
+  function lightControl(state)
   {
     $.ajax(
     {
       type: "GET",
       url: "api/light",
+      data: { format: 'json', state: state },
       success: function(response)
       {
-        console.log("success: " + response['success']);
+        console.log("light control response: " + response);
       }
     });
   }

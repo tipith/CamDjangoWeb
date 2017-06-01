@@ -231,8 +231,6 @@ class Statistics(APIView):
 
         cam = get_object_or_404(Camera, pk=camera_id)
 
-        #month_ago = timezone.localtime(timezone.now()) - datetime.timedelta(days=30)
-        #day_ago = timezone.localtime(timezone.now()) - datetime.timedelta(days=1)
         month_ago = timezone.now() - datetime.timedelta(days=30)
         day_ago = timezone.now() - datetime.timedelta(days=1)
 
@@ -261,14 +259,19 @@ class Light(APIView):
     Returns a list of events.
 
     Mandatory GET parameters are:
-    type   -- Selects which type of events are returned. Can be either 'light' or 'movement'
+    state   -- 'on' or 'off'
     """
     def get(self, request, format=None):
         params = request.query_params
         logger.info(params)
 
+        state = params.get('state', 'on')
+        if state not in ['on', 'off']:
+            logger.info("Invalid state")
+            raise Http404("Invalid state")
+
         messaging = Messaging.LocalClientMessaging()
-        messaging.send(Message.Message.msg_command('lights', 'on'))
+        messaging.send(Message.Message.msg_command('lights', state))
         messaging.stop()
 
         serializer = LightSerializer(LightResponse(True))
