@@ -126,13 +126,11 @@ class PictureList(APIView):
         datestring = params.get('date', None)
         if datestring:
             try:
-                #search_date = timezone.localtime(timezone.make_aware(datetime.datetime.strptime(datestring, '%Y-%m-%dT%H:%M:%S.%fZ')))
-                search_date = datetime.datetime.strptime(datestring, '%Y-%m-%dT%H:%M:%S.%fZ') + datetime.timedelta(hours=2)
+                search_date = datetime.datetime.strptime(datestring, '%Y-%m-%dT%H:%M:%S.%fZ') + datetime.timedelta(hours=3)
             except ValueError :
                 logger.info("Invalid date")
                 raise Http404("Invalid date")
         else:
-            #search_date = timezone.localtime(timezone.now())
             search_date = timezone.now()
 
         if pic_dir == 'next':
@@ -141,7 +139,6 @@ class PictureList(APIView):
             pics = reversed(pics.filter(timestamp__lte=search_date).order_by('-timestamp')[:num_of_pics])
 
         logger.info('searching from %s' % search_date)
-        #logger.info(pics.query)
 
         serializer = PictureSerializer(pics, many=True)
         return Response(serializer.data)
@@ -241,8 +238,8 @@ class Statistics(APIView):
 
         month = dict(pics.filter(idcamera=camera_id, timestamp__gte=month_ago).aggregate(Sum('filesize'), Count('filesize')))
         day = dict(pics.filter(idcamera=camera_id, timestamp__gte=day_ago).aggregate(Sum('filesize'), Count('filesize')))
-        logger.info(month)
-        logger.info(day)
+        logger.debug(month)
+        logger.debug(day)
         stat = StatisticsResponse(month['filesize__sum'], day['filesize__sum'], month['filesize__count'], day['filesize__count'])
         serializer = StatisticsSerializer(stat)
 

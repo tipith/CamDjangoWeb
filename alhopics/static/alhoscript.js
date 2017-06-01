@@ -7,7 +7,7 @@
 
   function anim_image(cam_id, i)
   {
-    console.log("anim_image: " + cam_id + ", " + i);
+    //console.log("anim_image: " + cam_id + ", " + i);
 
     if (current_idx[cam_id] == i)
       return;
@@ -76,6 +76,7 @@
       data: { format: 'json', camera: cam_id, date: _date.toISOString(), dir: _dir, type: _type },
       success: function(response)
       {
+        console.log("executed: " + response);
         addImages(cam_id, response);
       }
     });
@@ -110,8 +111,10 @@
 
   function convertIncomingDate(date)
   {
-    date = new Date(date);
-    return new Date(date.getTime() + date.getTimezoneOffset()*60*1000);
+    new_date = new Date(date);
+    //console.log("converting date: " + date + " -> " + new_date);
+    return new_date;
+    //return new Date(date.getTime() + date.getTimezoneOffset()*60*1000);
   }
 
   function addImages(cam_id, data)
