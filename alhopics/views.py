@@ -286,9 +286,9 @@ class Command(APIView):
         messaging = Messaging.LocalClientMessaging()
 
         if command == 'light':
-            messaging.send(Message.Message.msg_command('lights', state))
+            messaging.send(Message.CommandMessage('lights', state))
         elif command == 'livestream':
-            messaging.send(Message.Message.msg_command('livestream', state))
+            messaging.send(Message.CommandMessage('livestream', state))
 
         messaging.stop()
 

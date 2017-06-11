@@ -28,22 +28,49 @@
     </li>
   </ul>
 
+  <br>  <br>
+  <h3>Livekuva</h3>
   <br>
-  <h3>Debuglogi</h3>
+  <button type="button" onclick="sendCommand('livestream', 'on')">Livestream päälle</button>
+  <button type="button" onclick="sendCommand('livestream', 'off')">Livestream pois</button>
+  <br>
+  <img id="liveimage_1">
+  <img id="liveimage_2">
+
+  <br>  <br>
+  <h3>Saapuneet viestit</h3>
   <br>
   <div id="debugtuloste"> </div>
 
 </body>
 
+<script src="{% static "alhoscript.js" %}"></script>
+
 <script>
 socket = new WebSocket("ws://" + window.location.host + "/chat/");
-socket.onmessage = function(e) {
+
+socket.onmessage = function(event)
+{
+  var msg = JSON.parse(event.data);
+  if ("text" in msg)
+  {
     var div = document.getElementById('debugtuloste');
-    div.innerHTML = div.innerHTML + e.data + "<br/>";
+    div.innerHTML = div.innerHTML + msg.text + "<br/>";
+  }
+  else if ("livepic" in msg)
+  {
+    //var img = document.createElement('img');
+    //img.src = 'data:image/jpeg;base64,' + msg.livepic;
+    //document.getElementById('imageDiv_' + msg.source).innerHTML = img;
+
+    img = document.getElementById('liveimage_' + msg.source)
+    img.src = 'data:image/jpeg;base64,' + msg.livepic;
+  }
 }
 
-socket.onopen = function() {
-    socket.send("hello world");
+socket.onopen = function()
+{
+  socket.send("hello world");
 }
 
 // Call onopen directly if socket is already open

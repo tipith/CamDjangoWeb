@@ -4,7 +4,7 @@ import calendar
 import time
 import pickle
 import logging
-from . Message import Message
+from . Message import Message, HeartbeatMessage
 
 module_logger = logging.getLogger('Messaging')
 
@@ -13,6 +13,7 @@ class BaseMessaging(threading.Thread):
 
     def __init__(self, up, down, heartbeat_enable):
         threading.Thread.__init__(self)
+        self.name = 'MessagingThread'
         self.is_running = True
         self.handlers = {}
         self.up = up
@@ -42,12 +43,14 @@ class BaseMessaging(threading.Thread):
                             module_logger.info('no handler found for frame %i' % (msg['id']))
                         if '*' in self.handlers:
                             self.handlers['*'](msg)
+                else:
+                    time.sleep(0.5)
 
                 curr_time = calendar.timegm(time.gmtime())
 
                 # send heartbeat to uplink
                 if self.last_up + 10 < curr_time:
-                    self.send(Message.msg_heartbeat())
+                    self.send(HeartbeatMessage())
 
                 # check received heartbeat status
                 if self.heartbeat_enable and self.last_down + 300 < curr_time and self.last_retry + min(self.retry_cnt, 10) * 60 < curr_time:
@@ -76,11 +79,11 @@ class BaseMessaging(threading.Thread):
         except Exception as e:
             return None
 
-    def send(self, msg):
+    def send(self, msg, serialize=True):
         if self.up is not None:
             try:
                 self.last_up = calendar.timegm(time.gmtime())
-                return self.up.send_pyobj(msg, protocol=2)
+                return self.up.send_pyobj(msg.serialize() if serialize else msg, protocol=2)
             except zmq.ZMQError:
                 module_logger.info('Error: unable to send msg')
                 return None
