@@ -2,7 +2,6 @@ from datetime import datetime
 import logging
 
 
-
 message_logger = logging.getLogger('Message')
 
 
@@ -18,8 +17,9 @@ class Message:
     Text = 5
     LightControl = 6
     ImageMovement = 7
+    Heartbeat = 8
 
-    known_messages = [Image, Variable, Command, Movement, Text, LightControl, ImageMovement]
+    known_messages = [Image, Variable, Command, Movement, Text, LightControl, ImageMovement, Heartbeat]
     header_fields = ['src', 'time', 'uptime', 'id']
 
     @staticmethod
@@ -47,10 +47,56 @@ class Message:
         return False
 
     @staticmethod
+    def msg_image(img):
+        msg = Message._header(0, Message.Image)
+        msg['data'] = img
+        return msg
+
+    @staticmethod
+    def msg_variable(name, value):
+        msg = Message._header(0, Message.Variable)
+        msg['name'] = name
+        msg['value'] = value
+        return msg
+
+    @staticmethod
     def msg_command(command, parameter):
         msg = Message._header('server', Message.Command)
         msg['command'] = command
         msg['parameter'] = parameter
+        return msg
+
+    @staticmethod
+    def msg_movement(detector, state, uuid):
+        msg = Message._header(0, Message.Movement)
+        msg['detector'] = detector
+        msg['state'] = state
+        msg['uuid'] = uuid
+        return msg
+
+    @staticmethod
+    def msg_text(text):
+        msg = Message._header(0, Message.Text)
+        msg['text'] = text
+        return msg
+
+    @staticmethod
+    def msg_light_control(state, uuid):
+        msg = Message._header(0, Message.LightControl)
+        msg['state'] = state
+        msg['uuid'] = uuid
+        return msg
+
+    @staticmethod
+    def msg_movement_image(img, uuid):
+        msg = Message._header(0, Message.ImageMovement)
+        msg['uuid'] = uuid
+        msg['data'] = img
+        return msg
+
+    @staticmethod
+    def msg_heartbeat():
+        msg = Message._header(0, Message.Heartbeat)
         return msg
 
     @staticmethod

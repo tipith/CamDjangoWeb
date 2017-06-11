@@ -18,7 +18,7 @@ import Messaging
 import Message
 
 
-from .models import Camera, Picture, Picturemovement, Lightcontrol, Movement, StatisticsResponse, LightResponse
+from .models import Camera, Picture, Picturemovement, Lightcontrol, Movement, StatisticsResponse, CommandResponse
 
 logger = logging.getLogger(__name__)
 
@@ -73,6 +73,12 @@ def movement(request):
 def graph(request):
     context = {'user': request.user}
     return render(request, 'alhopics/graph.html', context)
+
+
+@login_required
+def debug(request):
+    context = {'user': request.user}
+    return render(request, 'alhopics/debug.html', context)
 
 
 class PictureSerializer(serializers.ModelSerializer):
@@ -229,6 +235,7 @@ class Statistics(APIView):
             logger.info("Camera id is missing")
             raise Http404("Camera id is missing")
 
+        # ensure that camera id exists
         cam = get_object_or_404(Camera, pk=camera_id)
 
         month_ago = timezone.now() - datetime.timedelta(days=30)
@@ -244,26 +251,32 @@ class Statistics(APIView):
         return Response(serializer.data)
 
 
-class LightSerializer(serializers.ModelSerializer):
+class CommandSerializer(serializers.ModelSerializer):
     status = serializers.BooleanField()
 
     class Meta:
-        model = LightResponse
+        model = CommandResponse
         fields = '__all__'
 
 
-class Light(APIView):
+class Command(APIView):
     permission_classes = [permissions.IsAuthenticated]
 
     """
-    Returns a list of events.
+    Make a control command.
 
     Mandatory GET parameters are:
+    command -- 'light', 'livestream'
     state   -- 'on' or 'off'
     """
     def get(self, request, format=None):
         params = request.query_params
         logger.info(params)
+
+        command = params.get('command', None)
+        if command not in ['light', 'livestream']:
+            logger.info("Invalid command")
+            raise Http404("Invalid command")
 
         state = params.get('state', 'on')
         if state not in ['on', 'off']:
@@ -271,9 +284,14 @@ class Light(APIView):
             raise Http404("Invalid state")
 
         messaging = Messaging.LocalClientMessaging()
-        messaging.send(Message.Message.msg_command('lights', state))
+
+        if command == 'light':
+            messaging.send(Message.Message.msg_command('lights', state))
+        elif command == 'livestream':
+            messaging.send(Message.Message.msg_command('livestream', state))
+
         messaging.stop()
 
-        serializer = LightSerializer(LightResponse(True))
+        serializer = CommandSerializer(CommandResponse(True))
 
         return Response(serializer.data)

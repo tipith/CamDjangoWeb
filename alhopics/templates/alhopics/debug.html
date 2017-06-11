@@ -16,10 +16,10 @@
 <body>
   <ul>
     <li><a href=".">Kamerakuva</a></li>
-    <li><a class="active" href="event">Tapahtumat</a></li>
+    <li><a href="event">Tapahtumat</a></li>
     <li><a href="movement">Liikekuva</a></li>
     <li><a href="graph">Graafit</a></li>
-    <li><a href="debug">Debug</a></li>
+    <li><a class="active" href="debug">Debug</a></li>
     <li style="float:right">
       <div class="logout_container">
         <div class="logout_text">Kirjauduttu käyttäjänä <b>{{ user }}</b></div>
@@ -27,32 +27,27 @@
       </div>
     </li>
   </ul>
-  <br>
-  <h3>Valo-ohjaukset</h3>
-  <br>
-  <button type="button" onclick="sendCommand('light', 'on')">Valot päälle (5 min)</button>
-  <button type="button" onclick="sendCommand('light', 'off')">Valot pois</button>
-  <button type="button" onclick="sendCommand('livestream', 'on')">Livestream päälle</button>
-  <button type="button" onclick="sendCommand('livestream', 'off')">Livestream pois</button>
-  <br><br>
 
-  <table id="lightcontrol" class="centre-align"></table>
   <br>
-  <h3>Liiketunnistustapahtumat</h3>
+  <h3>Debuglogi</h3>
   <br>
-  <table id="movement" class="centre-align"></table>
+  <div id="debugtuloste"> </div>
 
 </body>
 
-<script src="{% static "alhoscript.js" %}"></script>
-
 <script>
-  function start() {
-    updateLightControl();
-    updateMovement();
-  }
+socket = new WebSocket("ws://" + window.location.host + "/chat/");
+socket.onmessage = function(e) {
+    var div = document.getElementById('debugtuloste');
+    div.innerHTML = div.innerHTML + e.data + "<br/>";
+}
 
-  window.onload = start();
+socket.onopen = function() {
+    socket.send("hello world");
+}
+
+// Call onopen directly if socket is already open
+if (socket.readyState == WebSocket.OPEN) socket.onopen();
 </script>
 
 </html>

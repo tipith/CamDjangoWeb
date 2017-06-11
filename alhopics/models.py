@@ -10,7 +10,7 @@ from __future__ import unicode_literals
 from django.db import models
 
 
-class LightResponse(models.Model):
+class CommandResponse(models.Model):
     def __init__(self, status):
         self.status = status
 

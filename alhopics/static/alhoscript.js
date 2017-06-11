@@ -50,16 +50,16 @@
     });
   }
 
-  function lightControl(state)
+  function sendCommand(command, state)
   {
     $.ajax(
     {
       type: "GET",
-      url: "api/light",
-      data: { format: 'json', state: state },
+      url: "api/command",
+      data: { format: 'json', command: command, state: state },
       success: function(response)
       {
-        console.log("light control response: " + response);
+        console.log("command response: " + response);
       }
     });
   }
