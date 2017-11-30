@@ -4,7 +4,7 @@ import json
 from channels import Group
 from channels.sessions import channel_session
 from alhopics import cam_messenger
-import Message
+from . import Message
 
 
 def img_callback(msg):
@@ -17,7 +17,7 @@ def img_callback(msg):
 def any_callback(msg):
     ws_msg = json.dumps({"text": Message.Message.msg_info(msg)})
     Group("debug").send({"text": ws_msg})
-    print 'got %s' + Message.Message.msg_info(msg)
+    print('got %s' + Message.Message.msg_info(msg))
 
 
 @channel_session

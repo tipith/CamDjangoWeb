@@ -1,4 +1,4 @@
-import Messaging, Message
+from . import Messaging, Message
 
 cam_messenger = None
 
@@ -7,7 +7,7 @@ def startup():
     if not isinstance(cam_messenger, Messaging.LocalClientMessaging):
         cam_messenger = Messaging.LocalClientMessaging()
         cam_messenger.start()
-    print 'created ' + str(cam_messenger)
+    print('created ' + str(cam_messenger))
 
 
 startup()

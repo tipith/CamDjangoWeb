@@ -14,8 +14,7 @@ from django.contrib.auth.decorators import login_required
 
 from django.contrib.staticfiles.templatetags.staticfiles import static
 
-import Messaging
-import Message
+from . import Messaging, Message
 
 
 from .models import Camera, Picture, Picturemovement, Lightcontrol, Movement, StatisticsResponse, CommandResponse
