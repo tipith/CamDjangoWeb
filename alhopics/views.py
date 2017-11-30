@@ -132,7 +132,7 @@ class PictureList(APIView):
         datestring = params.get('date', None)
         if datestring:
             try:
-                search_date = datetime.datetime.strptime(datestring, '%Y-%m-%dT%H:%M:%S.%fZ') + datetime.timedelta(hours=3)
+                search_date = datetime.datetime.strptime(datestring, '%Y-%m-%dT%H:%M:%S.%fZ') + datetime.timedelta(hours=2)
             except ValueError :
                 logger.info("Invalid date")
                 raise Http404("Invalid date")

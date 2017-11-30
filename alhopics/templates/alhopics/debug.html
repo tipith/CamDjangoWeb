@@ -31,16 +31,19 @@
   <br>  <br>
   <h3>Livekuva</h3>
   <br>
+  <button type="button" onclick="sendCommand('light', 'on')">Valot päälle (5 min)</button>
+  <button type="button" onclick="sendCommand('light', 'off')">Valot pois</button>
+  <br>  <br>
   <button type="button" onclick="sendCommand('livestream', 'on')">Livestream päälle</button>
   <button type="button" onclick="sendCommand('livestream', 'off')">Livestream pois</button>
-  <br>
+  <br>  <br>
   <img id="liveimage_1">
   <img id="liveimage_2">
 
   <br>  <br>
   <h3>Saapuneet viestit</h3>
   <br>
-  <div id="debugtuloste"> </div>
+  <div id="debugtuloste" style="max-height:209px;overflow:auto;">> </div>
 
 </body>
 
@@ -56,13 +59,10 @@ socket.onmessage = function(event)
   {
     var div = document.getElementById('debugtuloste');
     div.innerHTML = div.innerHTML + msg.text + "<br/>";
+    div.scrollTop = div.scrollHeight;
   }
   else if ("livepic" in msg)
   {
-    //var img = document.createElement('img');
-    //img.src = 'data:image/jpeg;base64,' + msg.livepic;
-    //document.getElementById('imageDiv_' + msg.source).innerHTML = img;
-
     img = document.getElementById('liveimage_' + msg.source)
     img.src = 'data:image/jpeg;base64,' + msg.livepic;
   }
