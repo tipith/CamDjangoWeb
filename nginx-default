@@ -1,0 +1,70 @@
+##
+# You should look at the following URL's in order to grasp a solid understanding
+# of Nginx configuration files in order to fully unleash the power of Nginx.
+# http://wiki.nginx.org/Pitfalls
+# http://wiki.nginx.org/QuickStart
+# http://wiki.nginx.org/Configuration
+#
+# Generally, you will want to move this file somewhere, and start with a clean
+# file but keep this around for reference. Or just disable in sites-enabled.
+#
+# Please see /usr/share/doc/nginx-doc/examples/ for more detailed examples.
+##
+
+upstream django {
+    server unix:///home/pihlstro/projects/alhoweb/alhoweb.sock;
+}
+
+server {
+    listen 80;
+    server_name tipi.dy.fi;
+    charset utf-8;
+    client_max_body_size 20M;
+
+    location /static/data {
+        alias /opt/alho;
+    }
+
+    location /static {
+        alias /home/pihlstro/projects/alhoweb/alhopics/static;
+    }
+
+    location / {
+        uwsgi_pass django;
+        include /home/pihlstro/projects/alhoweb/uwsgi_params;
+    }
+}
+
+server {
+    listen 8000;
+    server_name zorg;
+    charset utf-8;
+    client_max_body_size 20M;
+
+    error_log /var/log/nginx/debug.log debug;
+
+    location /static {
+       	alias /home/pihlstro/static;
+    }
+
+    location /media {
+        alias /home/pihlstro/media;
+    }
+
+    location / {
+        proxy_pass http://localhost:8001;
+        proxy_http_version 1.1;
+        
+        proxy_set_header Upgrade $http_upgrade;
+        proxy_set_header Connection "Upgrade";
+        # proxy_set_header Connection $connection_upgrade;
+
+        proxy_buffering off;
+        proxy_redirect off;
+        proxy_set_header Host $host;
+        
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Host $server_name;
+    }
+}
