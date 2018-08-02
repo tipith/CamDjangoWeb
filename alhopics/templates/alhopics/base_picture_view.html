@@ -21,36 +21,34 @@
 <script src="{% static "alhoscript.js" %}"></script>
 
 <script>
-  var current_idx      = { {% for camid in cameras %} {{ camid }}: -1,{% endfor %} };
+  var cam_ids          = [ {% for camid in cameras %} {{ camid }}, {% endfor %} ];
   var images           = { {% for camid in cameras %} {{ camid }}: [],{% endfor %} };
-  var last_valid_start = { {% for camid in cameras %} {{ camid }}: -1,{% endfor %} };
-  var last_valid_end   = { {% for camid in cameras %} {{ camid }}: -1,{% endfor %} };
+  var last_valid_start = -1;
+  var last_valid_end   = -1;
   var preload_img      = { {% for camid in cameras %} {{ camid }}: new Array(),{% endfor %} };
 
   function start() {
-    {% for camid in cameras %}updateDates({{ camid }}, new Date(), "prev", "{{ type }}");
-    {% endfor %}
+    updateDates(new Date(), "prev", "{{ type }}");
   }
-  {% for camid in cameras %}
+
   $(function()
   {
-    $("#cam{{ camid }}_datepicker").datepicker({
+    $("#datepicker").datepicker({
         dateFormat: 'yy-mm-dd',
         onSelect: function(date) {
-          updateDates({{ camid }}, new Date(date), "prev", "{{ type }}");
+          updateDates(new Date(date), "prev", "{{ type }}");
         },
     });
   });
-  {% endfor %}
 
-  function getPreviousImages(cam)
+  function getPreviousImages()
   {
-    updateDates(cam, last_valid_start[cam], "prev", "{{ type }}");
+    updateDates(last_valid_start, "prev", "{{ type }}");
   }
 
-  function getNextImages(cam)
+  function getNextImages()
   {
-    updateDates(cam, last_valid_end[cam], "next", "{{ type }}");
+    updateDates(last_valid_end, "next", "{{ type }}");
   }
 
   window.onload = start();

@@ -68,11 +68,6 @@ socket.onmessage = function(event)
   }
 }
 
-socket.onopen = function()
-{
-  socket.send("hello world");
-}
-
 // Call onopen directly if socket is already open
 if (socket.readyState == WebSocket.OPEN) socket.onopen();
 </script>

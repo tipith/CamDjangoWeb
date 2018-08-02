@@ -1,6 +1,7 @@
 import os
 import logging
 import datetime
+import pytz
 
 from django.conf import settings
 from django.utils import timezone
@@ -22,7 +23,7 @@ from .models import Camera, Picture, Picturemovement, Lightcontrol, Movement, St
 logger = logging.getLogger(__name__)
 
 
-num_of_pics = 16
+num_of_pics = 32
 num_of_events = 20
 
 
@@ -131,8 +132,10 @@ class PictureList(APIView):
         datestring = params.get('date', None)
         if datestring:
             try:
-                search_date = datetime.datetime.strptime(datestring, '%Y-%m-%dT%H:%M:%S.%fZ') + datetime.timedelta(hours=2)
-            except ValueError :
+                search_date = datetime.datetime.strptime(datestring, '%Y-%m-%dT%H:%M:%S.%fZ')
+                # someone wise decided to store db timestamps in localtime...
+                search_date = search_date.replace(tzinfo=pytz.UTC).astimezone(pytz.timezone(settings.TIME_ZONE)).replace(tzinfo=None)
+            except ValueError:
                 logger.info("Invalid date")
                 raise Http404("Invalid date")
         else:
