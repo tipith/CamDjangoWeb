@@ -1,8 +1,12 @@
-from channels.routing import route
-from alhopics.consumers import ws_connect, ws_message, ws_disconnect
+from django.urls import path
+from channels.routing import ProtocolTypeRouter, URLRouter
+from channels.auth import AuthMiddlewareStack
 
-channel_routing = [
-    route("websocket.connect", ws_connect),
-    route("websocket.receive", ws_message),
-    route("websocket.disconnect", ws_disconnect),
-]
+from alhopics.consumers import WSConsumer
+
+application = ProtocolTypeRouter({
+    # Channels will do this for you automatically. It's included here as an example.
+    # "http": AsgiHandler,
+
+    'websocket': AuthMiddlewareStack(URLRouter([path("chat/", WSConsumer),])),
+})

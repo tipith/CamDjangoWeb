@@ -1,44 +1,41 @@
 import base64
-import json
 import logging
 
-from channels import Group
-from channels.sessions import channel_session
-from alhopics import cam_messenger
-from . import Message
+from asgiref.sync import async_to_sync
+from channels.generic.websocket import JsonWebsocketConsumer
+
+from . import Messaging, Message
 
 logger = logging.getLogger(__name__)
 
 
-def img_callback(msg):
-    if msg['type'] == 3:
-        ws_msg = json.dumps({"livepic": base64.b64encode(msg['data']), "source": msg['src']})
-        Group("debug").send({"text": ws_msg})
-        logger.info('livestream pic from %s' % msg['src'])
+class WSConsumer(JsonWebsocketConsumer):
 
+    def connect(self):
+        self.messenger = Messaging.LocalClient()
+        self.messenger.start()
+        self.messenger.install(Message.Message.Image, self.img_callback)
+        self.messenger.install('*', self.any_callback)
+        self.messenger.send(Message.CommandMessage('joined from', self.channel_name))
+        async_to_sync(self.channel_layer.group_add)('debug', self.channel_name)
+        logger.info('opened')
+        self.accept()
 
-def any_callback(msg):
-    ws_msg = json.dumps({"text": Message.Message.msg_info(msg)})
-    Group("debug").send({"text": ws_msg})
-    logger.info('got %s' + Message.Message.msg_info(msg))
+    def receive_json(self, content):
+        async_to_sync(self.channel_layer.group_send)('debug', {'text': content['text']})
 
+    def disconnect(self, code):
+        self.messenger.send(Message.CommandMessage('disconnect', 'yep'))
+        self.messenger.stop()
+        async_to_sync(self.channel_layer.group_discard)('debug', self.channel_name)
 
-@channel_session
-def ws_connect(message):
-    cam_messenger.install(Message.Message.Image, img_callback)
-    cam_messenger.install('*', any_callback)
-    cam_messenger.send(Message.CommandMessage('joined from', str(message['client'])))
-    message.reply_channel.send({"accept": True})
-    Group("debug").add(message.reply_channel)
-    logger.info('opened')
+    def img_callback(self, msg):
+        if msg['type'] == Message.ImageMessage.TYPE_LIVE:
+            ws_msg = {'livepic': base64.b64encode(msg['data']), 'source': msg['src']}
+            self.send_json(ws_msg)
+            logger.info('livestream pic from %s' % msg['src'])
 
-
-@channel_session
-def ws_message(message):
-    Group("debug").send({"text": message['text']})
-
-
-@channel_session
-def ws_disconnect(message):
-    cam_messenger.send(Message.CommandMessage('disconnect', 'yep'))
-    Group("debug").discard(message.reply_channel)
+    def any_callback(self, msg):
+        ws_msg = {'text': Message.Message.msg_info(msg)}
+        self.send_json(ws_msg)
+        logger.info('any_callback: ' + str(ws_msg))

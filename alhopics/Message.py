@@ -37,19 +37,15 @@ class Message(object):
             return 0
 
     @staticmethod
-    def _header(src, id):
-        return dict(zip(Message.header_fields, [src, datetime.now().replace(microsecond=0), Message._uptime(), id]))
-
-    @staticmethod
     def verify(msg):
         if msg is not None:
             if all(k in msg for k in Message.header_fields):
                 if msg['id'] in Message.known_messages:
                     return True
                 else:
-                    message_logger.warn('Error: message id is not known: %i' % (msg['id']))
+                    message_logger.warning('Error: message id is not known: %i' % (msg['id']))
             else:
-                message_logger.warn('Error: invalid header fields')
+                message_logger.warning('Error: invalid header fields' + str(msg))
         return False
 
     @staticmethod
@@ -73,6 +69,11 @@ class Message(object):
 
 
 class ImageMessage(Message):
+    TYPE_PERIODICAL = 1
+    TYPE_MOVEMENT = 2
+    TYPE_LIVE = 3
+    TYPE_TEST = 4
+
     def __init__(self):
         super(ImageMessage, self).__init__()
 
@@ -109,6 +110,14 @@ class ImageMessageLive(ImageMessage):
         self.img = img
         self.uuid = ''
         super(ImageMessageLive, self).__init__()
+
+
+class ImageMessageTest(ImageMessage):
+    def __init__(self, img):
+        self.type = ImageMessage.TYPE_TEST
+        self.img = img
+        self.uuid = ''
+        super(ImageMessageTest, self).__init__()
 
 
 class VariableMessage(Message):

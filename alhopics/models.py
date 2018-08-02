@@ -17,10 +17,10 @@ class CommandResponse(models.Model):
 
 class StatisticsResponse(models.Model):
     def __init__(self, data_month=0, data_day=0, pics_month=0, pics_day=0):
-        self.data_month = data_month / 1024 / 1024
-        self.data_day = data_day / 1024 / 1024
-        self.pics_month = pics_month
-        self.pics_day = pics_day
+        self.data_month = data_month / 1024 / 1024 if data_month else 0
+        self.data_day = data_day / 1024 / 1024 if data_day else 0
+        self.pics_month = pics_month if pics_month else 0
+        self.pics_day = pics_day if pics_day else 0
 
 
 class Camera(models.Model):
