@@ -31,11 +31,13 @@
   <br>  <br>
   <h3>Livekuva</h3>
   <br>
-  <button type="button" onclick="sendCommand('light', 'on')">Valot päälle (5 min)</button>
-  <button type="button" onclick="sendCommand('light', 'off')">Valot pois</button>
+  <button type="button" onclick="sendCommandWS('light', 'on')">Valot päälle (5 min)</button>
+  <button type="button" onclick="sendCommandWS('light', 'off')">Valot pois</button>
   <br>  <br>
-  <button type="button" onclick="sendCommand('livestream', 'on')">Livestream päälle</button>
-  <button type="button" onclick="sendCommand('livestream', 'off')">Livestream pois</button>
+  <button type="button" onclick="sendCommandWS('livestream', 'on')">Livestream päälle</button>
+  <button type="button" onclick="sendCommandWS('livestream', 'off')">Livestream pois</button>
+  <br>  <br>
+  <button type="button" onclick="sendCommandWS('ping', '1234')">Ping transport backend</button>
   <br>  <br>
   <img id="liveimage_1">
   <img id="liveimage_2">
@@ -66,6 +68,12 @@ socket.onmessage = function(event)
     img = document.getElementById('liveimage_' + msg.source)
     img.src = 'data:image/jpeg;base64,' + msg.livepic;
   }
+}
+
+function sendCommandWS(cmd, param)
+{
+  var msg = {"command": cmd, "parameter": param};
+  socket.send(JSON.stringify(msg));
 }
 
 // Call onopen directly if socket is already open
