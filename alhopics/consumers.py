@@ -31,11 +31,13 @@ class WSConsumer(JsonWebsocketConsumer):
 
     def img_callback(self, msg):
         if msg['type'] == Message.ImageMessage.TYPE_LIVE:
-            ws_msg = {'livepic': base64.b64encode(msg['data']), 'source': msg['src']}
+            ws_msg = {'livepic': base64.b64encode(msg['data']).decode('ascii'), 'source': msg['src']}
+            logger.info('livestreaming from %s' % msg['src'])
+            logger.info(str(ws_msg))
             self.send_json(ws_msg)
-            logger.info('livestream pic from %s' % msg['src'])
 
     def any_callback(self, msg):
         ws_msg = {'text': Message.Message.msg_info(msg)}
-        self.send_json(ws_msg)
         logger.info('any_callback: ' + str(ws_msg))
+        self.send_json(ws_msg)
+        #async_to_sync(self.channel_layer.group_send)('debug', ws_msg)

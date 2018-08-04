@@ -285,14 +285,12 @@ class Command(APIView):
             logger.info("Invalid state")
             raise Http404("Invalid state")
 
-        messaging = Messaging.LocalClientMessaging()
+        messaging = Messaging.LocalClient()
 
         if command == 'light':
             messaging.send(Message.CommandMessage('lights', state))
         elif command == 'livestream':
             messaging.send(Message.CommandMessage('livestream', state))
-
-        messaging.stop()
 
         serializer = CommandSerializer(CommandResponse(True))
 

@@ -1,41 +1,99 @@
-import random
-import django
+import io
 import datetime
 import logging
 
+from django.http import HttpResponse
 from django.utils import timezone
+from django.contrib.auth.decorators import login_required
+from django.db.models import Sum, Count
 
-from matplotlib.backends.backend_agg import FigureCanvasAgg as FigureCanvas
+import matplotlib
+matplotlib.use('Agg')
+from matplotlib.backends.backend_agg import FigureCanvasAgg
 from matplotlib.figure import Figure
 from matplotlib.dates import DateFormatter
 
-from .models import Rpitemperature
+
+from .models import Rpitemperature, Picture
 
 
 logger = logging.getLogger(__name__)
+cams = {1: 'Piha', 2: 'Autotalli'}
 
 
-def rpi_temp(request):
-    days_ago = timezone.now() - datetime.timedelta(days=3)
-    temps = Rpitemperature.objects.filter(idcamera=1, timestamp__gte=days_ago).order_by('timestamp')
-    temps_cam1 = temps.values_list('timestamp', 'temperature')
-    temps = Rpitemperature.objects.filter(idcamera=2, timestamp__gte=days_ago).order_by('timestamp')
-    temps_cam2 = temps.values_list('timestamp', 'temperature')
-
+def get_ax_and_response(title):
     fig = Figure()
     ax = fig.add_subplot(111)
+    yield ax
 
-    x1 = [point[0] for point in temps_cam1]
-    y1 = [float(point[1]) for point in temps_cam1]
-    ax.plot_date(x1, y1, '-')
+    ax.set_title(title)
+    ax.grid()
+    ax.legend()
 
-    x2 = [point[0] for point in temps_cam2]
-    y2 = [float(point[1]) for point in temps_cam2]
-    ax.plot_date(x2, y2, '-')
+    ax.spines['top'].set_visible(False)
+    ax.spines['right'].set_visible(False)
 
-    ax.xaxis.set_major_formatter(DateFormatter('%Y-%m-%d %H:%M'))
+    ax.xaxis.set_major_formatter(DateFormatter('%d.%m'))
     fig.autofmt_xdate()
-    canvas = FigureCanvas(fig)
-    response = django.http.HttpResponse(content_type='image/png')
-    canvas.print_png(response)
-    return response
+    canvas = FigureCanvasAgg(fig)
+    buf = io.BytesIO()
+    canvas.print_png(buf)
+    yield HttpResponse(buf.getvalue(), content_type='image/png')
+
+
+@login_required
+def rpi_temp(request):
+    gen = get_ax_and_response('Prosessorilämpötila')
+    ax = next(gen)
+
+    days_ago = timezone.now() - datetime.timedelta(days=360)
+
+    for cam_id, cam_name in cams.items():
+        temps = Rpitemperature.objects.filter(idcamera=cam_id, timestamp__gte=days_ago) \
+            .order_by('timestamp')
+        temps = temps.values_list('timestamp', 'temperature')
+        x = [point[0] for point in temps]
+        y = [float(point[1]) for point in temps]
+        ax.plot_date(x, y, '-', label=cam_name)
+
+    return next(gen)
+
+
+@login_required
+def pics_per_day(request):
+    gen = get_ax_and_response('Kuvia päivässä')
+    ax = next(gen)
+
+    days_ago = timezone.now() - datetime.timedelta(days=360)
+
+    for cam_id, cam_name in cams.items():
+        counts = Picture.objects.filter(idcamera=cam_id, timestamp__gte=days_ago) \
+            .extra({'date': "date(timestamp)"}) \
+            .values('date') \
+            .annotate(pic_count=Count('idpicture'))
+        x = [c['date'] for c in counts]
+        y = [c['pic_count'] for c in counts]
+        ax.plot_date(x, y, '-', label=cam_name)
+
+    ax.set_ylim(bottom=0)
+    return next(gen)
+
+
+@login_required
+def megabytes_per_day(request):
+    gen = get_ax_and_response('Megatavuja päivässä')
+    ax = next(gen)
+
+    days_ago = timezone.now() - datetime.timedelta(days=360)
+
+    for cam_id, cam_name in cams.items():
+        counts = Picture.objects.filter(idcamera=cam_id, timestamp__gte=days_ago) \
+            .extra({'date': "date(timestamp)"}) \
+            .values('date') \
+            .annotate(bytes=Sum('filesize'))
+        x = [c['date'] for c in counts]
+        y = [c['bytes'] // 1024**2 for c in counts]
+        ax.plot_date(x, y, '-', label=cam_name)
+
+    ax.set_ylim(bottom=0)
+    return next(gen)
