@@ -12,10 +12,9 @@
 {% block script %}
 
 var cam_ids          = [ {% for camid in cameras %} {{ camid }}, {% endfor %} ];
-var images           = { {% for camid in cameras %} {{ camid }}: [],{% endfor %} };
 var last_valid_start = -1;
 var last_valid_end   = -1;
-var preload_img      = { {% for camid in cameras %} {{ camid }}: new Array(),{% endfor %} };
+
 
 function start() {
     updateDates(new Date(), "prev", "{{ type }}");

@@ -1,31 +1,19 @@
   var static_loc = "../static/"
-  var curr_datestring = "";
-  var epochs = []
+  var epochs = {}
 
-  function max_img_count()
+  function anim_image(epoch)
   {
-    return document.getElementById("cam_select").rows.length - 1;
-  }
-
-  function anim_image(datestring)
-  {
-    console.log("anim_image: " + datestring);
-
-    curr_selection = document.getElementById("cam_txt_" + curr_datestring)
-    if (curr_selection)
-        curr_selection.style.color = '#0000ff';
-    curr_datestring = datestring;
-    document.getElementById("cam_txt_" + curr_datestring).style.color = '#ff0000';
-
-    for (const cam_id of cam_ids)
+    if (epoch in epochs)
     {
-      for (const pic of images[cam_id])
+      curr_selection = document.getElementById("cam_txt_" + epochs.current)
+      if (curr_selection)
+        curr_selection.style.color = '#0000ff';
+      epochs.current = epoch;
+      document.getElementById("cam_txt_" + epochs.current).style.color = '#ff0000';
+
+      for (pic of epochs[epoch])
       {
-        if (datestring == pic['rounded_epoch'])
-        {
-          document.getElementById("cam" + cam_id + "_image").src = static_loc + pic['filelocation'];
-          break;
-        }
+        document.getElementById("cam" + pic['idcamera'] + "_image").src = pic['preload_img'].src;
       }
     }
   }
@@ -76,22 +64,6 @@
   {
     for (const cam_id of cam_ids)
     {
-        for (let img_elem of images[cam_id])
-        {
-          img_elem.src = "";
-        }
-
-        $.ajax({
-          type: "GET",
-          url: "api/pictures",
-          data: { format: 'json', camera: cam_id, date: _date.toISOString(), dir: _dir, type: _type },
-          success: function(response)
-          {
-            images[cam_id] = response;
-            addImages();
-          }
-        });
-
         $.ajax({
           type: "GET",
           url: "api/statistics",
@@ -111,6 +83,16 @@
           document.getElementById("cam" + cam_id + "_info2").innerHTML = "Viimeisin <b>" + data["cam" + cam_id]["last_heard"] + "</b>";
         });
     }
+
+    $.ajax({
+      type: "GET",
+      url: "api/pictures",
+      data: { format: 'json', date: _date.toISOString(), dir: _dir, type: _type, count: 64 },
+      success: function(response)
+      {
+        addImages(response);
+      }
+    });
   }
 
   function addZero(i)
@@ -124,15 +106,15 @@
   function scroll_image(e)
   {
 	var delta = Math.max(-1, Math.min(1, (e.wheelDelta || -e.detail)));
-	var idx = epochs.indexOf(curr_datestring);
+	var idx = epochs.order.indexOf(epochs.current);
 	if (idx >= 0)
 	{
 	  if (idx == 0 && delta == 1) {
 	    getPreviousImages();
-	  } else if (idx == max_img_count() && delta == -1) {
+	  } else if (idx == (epochs.order.length - 1) && delta == -1) {
 	    getNextImages();
 	  } else {
-	    anim_image(epochs[idx - delta]);
+	    anim_image(epochs.order[idx - delta]);
 	  }
 	}
 
@@ -146,7 +128,7 @@
     return new Date(Math.round(date.getTime() / coeff) * coeff).getTime();
   }
 
-  function addImages()
+  function addImages(_images)
   {
     var old_tbody = document.getElementById("cam_select").tBodies[0];
     var new_tbody = document.createElement('tbody');
@@ -156,27 +138,31 @@
         new_tbody.addEventListener("DOMMouseScroll", scroll_image, false);  // Firefox
     }
 
-    epochs = []
+    epochs = {
+        current: -1,
+        order: []
+    };
 
-    for (const cam_id of cam_ids)
+    for (let pic of _images)
     {
-        preload_img[cam_id] = []
+        pic['preload_img'] = new Image()
+        pic['preload_img'].src = static_loc + pic['filelocation'];
+        rounded_epoch = roundTimestampToEpoch(pic['timestamp']);
 
-        for (let pic of images[cam_id])
-        {
-            var img = new Image().src = static_loc + pic['filelocation'];
-            preload_img[cam_id].push(img);
-            pic['rounded_epoch'] = roundTimestampToEpoch(pic['timestamp']);
-            epochs.push(pic['rounded_epoch']);
-        }
+        if (!(rounded_epoch in epochs))
+            epochs[rounded_epoch] = [];
+        epochs[rounded_epoch].push(pic);
+        epochs.order.push(rounded_epoch);
     }
 
-    epochs = epochs.filter(function (date, i, array) { return array.indexOf(date) === i; })
-                   .sort();
+    // remove duplicates, sort and return only newest items
+    epochs.order = epochs.order.filter(function (date, i, array) { return array.indexOf(date) === i; })
+                                     .sort()
+                                     .slice(-32);
 
-    if (epochs.length != 0)
+    if (epochs.order.length != 0)
     {
-      for (const epoch of epochs)
+      for (const epoch of epochs.order)
       {
         var row = new_tbody.insertRow(new_tbody.rows.length);
         var cell = row.insertCell(0);
@@ -211,14 +197,14 @@
         //});
       }
 
-      last_valid_start = new Date(epochs[0]);
-      last_valid_end = new Date(epochs[epochs.length - 1]);
+      last_valid_start = new Date(epochs.order[0]);
+      last_valid_end = new Date(epochs.order.slice(-1)[0]);
       document.getElementById("cam_timespan").innerHTML =
         addZero(last_valid_start.getHours()) + ":" + addZero(last_valid_start.getMinutes()) + " - " +
         addZero(last_valid_end.getHours()) + ":" + addZero(last_valid_end.getMinutes());
 
       old_tbody.parentNode.replaceChild(new_tbody, old_tbody);
-      anim_image(epochs[epochs.length - 1]);
+      anim_image(epochs.order.slice(-1)[0]);
     }
     else
     {

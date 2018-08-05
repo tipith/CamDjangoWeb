@@ -23,7 +23,7 @@ from .models import Camera, Picture, Picturemovement, Lightcontrol, Movement, St
 logger = logging.getLogger(__name__)
 
 
-num_of_pics = 32
+NUM_OF_PICS = 64
 num_of_events = 20
 
 
@@ -93,13 +93,12 @@ class PictureList(APIView):
     """
     Returns a list of pictures.
 
-    Mandatory GET parameters are:
-    camera -- Camera number index starting from 1
-
     Optional GET parameters are:
+    camera -- Camera number index starting from 1. (default: all cameras)
     dir    -- Direction of the request. Can be either 'next' or 'prev'. (default: 'prev')
     type   -- Selects which type of images are returned. Can be either 'picture' or 'movement' (default: 'picture')
     date   -- Date for the requested images. (default: latest images)
+    count  -- Number of pictures returned. (default: 32)
     """
     def get(self, request, format=None):
         params = request.query_params
@@ -116,13 +115,9 @@ class PictureList(APIView):
             pics = Picture.objects.all()
 
         camera_id = params.get('camera', None)
-
-        if not camera_id:
-            logger.info("Camera id is missing")
-            raise Http404("Camera id is missing")
-
-        cam = get_object_or_404(Camera, pk=camera_id)
-        pics = pics.filter(idcamera=camera_id)
+        if camera_id:
+            cam = get_object_or_404(Camera, pk=camera_id)
+            pics = pics.filter(idcamera=camera_id)
 
         pic_dir = params.get('dir', 'prev')
         if pic_dir not in ['next', 'prev']:
@@ -141,10 +136,14 @@ class PictureList(APIView):
         else:
             search_date = timezone.now()
 
+        count = int(params.get('count', NUM_OF_PICS))
+        if count > NUM_OF_PICS:
+            count = NUM_OF_PICS
+
         if pic_dir == 'next':
-            pics = pics.filter(timestamp__gte=search_date).order_by('timestamp')[:num_of_pics]
+            pics = pics.filter(timestamp__gte=search_date).order_by('timestamp')[:count]
         else:
-            pics = reversed(pics.filter(timestamp__lte=search_date).order_by('-timestamp')[:num_of_pics])
+            pics = reversed(pics.filter(timestamp__lte=search_date).order_by('-timestamp')[:count])
 
         logger.info('searching from %s' % search_date)
 

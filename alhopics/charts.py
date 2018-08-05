@@ -68,7 +68,6 @@ def rpi_temp(request):
             .annotate(temp=Avg('temperature')) \
             .order_by('date')
         temps = temps.values_list('date', 'temp')
-        print(len(temps))
         x = [point[0] for point in temps]
         y = [float(point[1]) for point in temps]
         ax.plot_date(x, y, '-', label=cam_name)
