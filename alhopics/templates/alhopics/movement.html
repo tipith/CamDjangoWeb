@@ -1,17 +1,19 @@
 {% extends 'alhopics/base_picture_view.html' %}
 
 {% block content %}
-  <ul>
+
+<ul>
     <li><a href=".">Kamerakuva</a></li>
     <li><a href="event">Tapahtumat</a></li>
     <li><a class="active" href="movement">Liikekuva</a></li>
     <li><a href="graph">Graafit</a></li>
     <li><a href="debug">Debug</a></li>
     <li style="float:right">
-      <div class="logout_container">
-        <div class="logout_text">Kirjauduttu käyttäjänä <b>{{ user }}</b></div>
-        <a class="logout_link" href="logout">Kirjaudu ulos</a>
-      </div>
+        <div class="logout_container">
+          <div class="logout_text">Kirjauduttu käyttäjänä <b>{{ user }}</b></div>
+          <a class="logout_link" href="logout">Kirjaudu ulos</a>
+        </div>
     </li>
-  </ul>
+</ul>
+
 {% endblock %}

@@ -1,19 +1,7 @@
-{% load static %}
+{% extends 'alhopics/base.html' %}
 
-<!DOCTYPE html>
-<meta charset="utf-8"/>
+{% block body_content %}
 
-<html>
-
-<head>
-  <title>AlhoCam</title>
-  <link rel="stylesheet" type="text/css" href="{% static "alho_style.css" %}">
-  <link rel="stylesheet" href="https://code.jquery.com/ui/1.12.0/themes/base/jquery-ui.css">
-  <script src="https://code.jquery.com/jquery-1.12.4.js"></script>
-  <script src="https://code.jquery.com/ui/1.12.0/jquery-ui.js"></script>
-</head>
-
-<body>
   <ul>
     <li><a href=".">Kamerakuva</a></li>
     <li><a href="event">Tapahtumat</a></li>
@@ -47,11 +35,11 @@
   <br>
   <div id="debugtuloste" style="max-height:209px;overflow:auto;">> </div>
 
-</body>
+{% endblock %}
 
-<script src="{% static "alhoscript.js" %}"></script>
 
-<script>
+{% block script %}
+
 socket = new WebSocket("ws://" + window.location.host + "/chat/");
 
 socket.onmessage = function(event)
@@ -78,6 +66,5 @@ function sendCommandWS(cmd, param)
 
 // Call onopen directly if socket is already open
 if (socket.readyState == WebSocket.OPEN) socket.onopen();
-</script>
 
-</html>
+{% endblock %}

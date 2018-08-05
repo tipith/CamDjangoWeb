@@ -1,57 +1,46 @@
-{% load static %}
+{% extends 'alhopics/base.html' %}
 
-<!DOCTYPE html>
-<meta charset="utf-8"/>
 
-<html>
+{% block body_content %}
 
-<head>
-  <title>AlhoCam</title>
-  <link rel="stylesheet" type="text/css" href="{% static "alho_style.css" %}">
-  <link rel="stylesheet" href="https://code.jquery.com/ui/1.12.0/themes/base/jquery-ui.css">
-  <script src="https://code.jquery.com/jquery-1.12.4.js"></script>
-  <script src="https://code.jquery.com/ui/1.12.0/jquery-ui.js"></script>
-</head>
+    {% block content %}{% endblock %}
+    {% include "alhopics/picturelist.html" %}
 
-<body>
-  {% block content %}{% endblock %}
-  {% include "alhopics/picturelist.html" %}
-</body>
+{% endblock %}
 
-<script src="{% static "alhoscript.js" %}"></script>
 
-<script>
-  var cam_ids          = [ {% for camid in cameras %} {{ camid }}, {% endfor %} ];
-  var images           = { {% for camid in cameras %} {{ camid }}: [],{% endfor %} };
-  var last_valid_start = -1;
-  var last_valid_end   = -1;
-  var preload_img      = { {% for camid in cameras %} {{ camid }}: new Array(),{% endfor %} };
+{% block script %}
 
-  function start() {
+var cam_ids          = [ {% for camid in cameras %} {{ camid }}, {% endfor %} ];
+var images           = { {% for camid in cameras %} {{ camid }}: [],{% endfor %} };
+var last_valid_start = -1;
+var last_valid_end   = -1;
+var preload_img      = { {% for camid in cameras %} {{ camid }}: new Array(),{% endfor %} };
+
+function start() {
     updateDates(new Date(), "prev", "{{ type }}");
-  }
+}
 
-  $(function()
-  {
+$(function()
+{
     $("#datepicker").datepicker({
         dateFormat: 'yy-mm-dd',
         onSelect: function(date) {
           updateDates(new Date(date), "prev", "{{ type }}");
         },
     });
-  });
+});
 
-  function getPreviousImages()
-  {
+function getPreviousImages()
+{
     updateDates(last_valid_start, "prev", "{{ type }}");
-  }
+}
 
-  function getNextImages()
-  {
+function getNextImages()
+{
     updateDates(last_valid_end, "next", "{{ type }}");
-  }
+}
 
-  window.onload = start();
-</script>
+window.onload = start();
 
-</html>
+{% endblock %}

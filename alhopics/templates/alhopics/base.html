@@ -1,0 +1,29 @@
+{% load static %}
+
+<!DOCTYPE html>
+
+<html lang="en">
+<head>
+    <link rel="shortcut icon" type="image/png" href="{% static "favicon.ico" %}">
+    <link rel="stylesheet" type="text/css" href="{% static "alho_style.css" %}">
+    <link rel="stylesheet" href="https://code.jquery.com/ui/1.12.0/themes/base/jquery-ui.css">
+    <script src="https://code.jquery.com/jquery-1.12.4.js"></script>
+    <script src="https://code.jquery.com/ui/1.12.0/jquery-ui.js"></script>
+
+    <meta charset="UTF-8">
+    <title>AlhoCam</title>
+</head>
+
+<body>
+    {% block body_content %}
+    {% endblock %}
+</body>
+
+<script src="{% static "alhoscript.js" %}"></script>
+
+<script>
+    {% block script %}
+    {% endblock %}
+</script>
+
+</html>
