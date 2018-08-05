@@ -1,0 +1,8 @@
+mysqlclient
+django==2.0
+djangorestframework
+channels
+channels_redis
+zmq
+numpy
+matplotlib
