@@ -9,8 +9,11 @@ logger = logging.getLogger(__name__)
 
 class WSConsumer(JsonWebsocketConsumer):
 
+    upgroup = 'camtransport_cam'
+    downgroup = 'camtransport_www'
+
     def connect(self):
-        async_to_sync(self.channel_layer.group_add)('transport_web', self.channel_name)
+        async_to_sync(self.channel_layer.group_add)(WSConsumer.downgroup, self.channel_name)
         self.accept()
 
     def receive_json(self, content):
@@ -19,10 +22,10 @@ class WSConsumer(JsonWebsocketConsumer):
             'type': 'command',
             'message': content
         }
-        async_to_sync(self.channel_layer.group_send)('transport_cam', msg)
+        async_to_sync(self.channel_layer.group_send)(WSConsumer.upgroup, msg)
 
     def disconnect(self, code):
-        async_to_sync(self.channel_layer.group_discard)('transport_web', self.channel_name)
+        async_to_sync(self.channel_layer.group_discard)(WSConsumer.downgroup, self.channel_name)
 
     def live_picture(self, event):
         self.send_json(event['message'])

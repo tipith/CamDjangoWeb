@@ -1,5 +1,8 @@
   var static_loc = "../static/"
-  var epochs = {}
+  var epochs = {
+        current: -1,
+        order: []
+    };
 
   function anim_image(epoch)
   {
@@ -13,7 +16,7 @@
 
       for (pic of epochs[epoch])
       {
-        document.getElementById("cam" + pic['idcamera'] + "_image").src = pic['preload_img'].src;
+        document.getElementById("cam" + pic.idcamera + "_image").src = pic.preload_img.src;
       }
     }
   }
@@ -70,17 +73,17 @@
           data: { format: 'json', camera: cam_id, type: _type },
           success: function(response)
           {
-            document.getElementById("cam" + cam_id + "_info3").innerHTML = "Data <b>" + response["data_month"] + "</b> Mt (kk), <b>" + response["data_day"] + "</b> Mt (vrk)";
-            document.getElementById("cam" + cam_id + "_info4").innerHTML = "Kuvia <b>" + response["pics_month"] + "</b> (kk), <b>" + response["pics_day"] + "</b> (vrk)";
+            document.getElementById("cam" + cam_id + "_info3").innerHTML = "Data <b>" + response.data_month + "</b> Mt (kk), <b>" + response.data_day + "</b> Mt (vrk)";
+            document.getElementById("cam" + cam_id + "_info4").innerHTML = "Kuvia <b>" + response.pics_month + "</b> (kk), <b>" + response.pics_day + "</b> (vrk)";
           }
         });
 
         $.getJSON(static_loc + "data/vars.json", function(data)
         {
-          days = Math.floor(data["cam" + cam_id]["uptime"] / 86400);
-          hours = Math.floor((data["cam" + cam_id]["uptime"] % 86400) / 3600);
+          days = Math.floor(data["cam" + cam_id].uptime / 86400);
+          hours = Math.floor((data["cam" + cam_id].uptime % 86400) / 3600);
           document.getElementById("cam" + cam_id + "_info1").innerHTML = "Käynnissä <b>" + days + "</b> päivää, <b>" + hours + "</b> tuntia";
-          document.getElementById("cam" + cam_id + "_info2").innerHTML = "Viimeisin <b>" + data["cam" + cam_id]["last_heard"] + "</b>";
+          document.getElementById("cam" + cam_id + "_info2").innerHTML = "Viimeisin <b>" + data["cam" + cam_id].last_heard + "</b>";
         });
     }
 
@@ -138,6 +141,15 @@
         new_tbody.addEventListener("DOMMouseScroll", scroll_image, false);  // Firefox
     }
 
+    // remove preloads
+    //for (const e of epochs.order)
+    //{
+    //    for (let pic of e)
+    //    {
+    //        pic.preload_img.src = ""
+    //    }
+    //}
+
     epochs = {
         current: -1,
         order: []
@@ -145,9 +157,9 @@
 
     for (let pic of _images)
     {
-        pic['preload_img'] = new Image()
-        pic['preload_img'].src = static_loc + pic['filelocation'];
-        rounded_epoch = roundTimestampToEpoch(pic['timestamp']);
+        pic.preload_img = new Image()
+        pic.preload_img.src = static_loc + pic.filelocation;
+        rounded_epoch = roundTimestampToEpoch(pic.timestamp);
 
         if (!(rounded_epoch in epochs))
             epochs[rounded_epoch] = [];

@@ -99,3 +99,19 @@ class Rpitemperature(models.Model):
         managed = False
         db_table = 'RpiTemperature'
         app_label = 'pictures'
+
+
+class Uplink(models.Model):
+    iduplink = models.AutoField(db_column='idUplink', primary_key=True)  # Field name made lowercase.
+    timestamp = models.DateTimeField(db_column='Timestamp', blank=True, null=True)  # Field name made lowercase.
+    uptimeseconds = models.IntegerField(db_column='UptimeSeconds', blank=True, null=True)  # Field name made lowercase.
+    radioaccesstechnology = models.CharField(db_column='RadioAccessTechnology', max_length=45, blank=True, null=True)  # Field name made lowercase.
+    ipaddress = models.CharField(db_column='IPAddress', max_length=45, blank=True, null=True)  # Field name made lowercase.
+    networkname = models.CharField(db_column='NetworkName', max_length=45, blank=True, null=True)  # Field name made lowercase.
+    signalstrength = models.IntegerField(db_column='SignalStrength', blank=True, null=True)  # Field name made lowercase.
+    signalqualitypercent = models.IntegerField(db_column='SignalQualityPercent', blank=True, null=True)  # Field name made lowercase.
+
+    class Meta:
+        managed = False
+        db_table = 'Uplink'
+        app_label = 'pictures'

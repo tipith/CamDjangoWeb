@@ -14,7 +14,7 @@ from matplotlib.figure import Figure
 from matplotlib.dates import DateFormatter
 
 
-from .models import Rpitemperature, Picture
+from .models import Rpitemperature, Picture, Uplink
 
 
 logger = logging.getLogger(__name__)
@@ -28,6 +28,7 @@ def get_ax_and_response(titles, fmt=DateFormatter('%d.%m')):
     for ind, title in enumerate(titles):
         # nrows, ncols, index
         ax = fig.add_subplot(1, len(titles), ind + 1)
+        yield ax
         ax.set_title(title)
         ax.grid()
         ax.legend()
@@ -35,7 +36,6 @@ def get_ax_and_response(titles, fmt=DateFormatter('%d.%m')):
         ax.spines['right'].set_visible(False)
         if fmt:
             ax.xaxis.set_major_formatter(fmt)
-        yield ax
 
     fig.autofmt_xdate()
     canvas = FigureCanvasAgg(fig)
@@ -124,12 +124,31 @@ def megabytes_per_day(request):
     return next(gen)
 
 
+def uplink(request):
+    gen = get_ax_and_response('Modeemisignaali')
+    ax = next(gen)
+
+    days_ago = timezone.now() - datetime.timedelta(days=7)
+
+    vals = Uplink.objects.filter(timestamp__gte=days_ago).order_by('timestamp')
+    print(vals)
+    x = [v.timestamp for v in vals]
+    y1 = [v.signalstrength for v in vals]
+    y2 = [v.signalqualitypercent for v in vals]
+    ax.plot_date(x, y1, '-', label='Voimakkuus')
+    ax.plot_date(x, y2, '-', label='Laatu')
+
+    ax.set_ylim(bottom=0)
+    return next(gen)
+
+
 @login_required
 def plot(request, filename=None, extension=None):
     plot_mapping = {
         'rpi_temp': rpi_temp,
         'pics_per_day': pics_per_day,
-        'megabytes_per_day': megabytes_per_day
+        'megabytes_per_day': megabytes_per_day,
+        'uplink': uplink
     }
     if filename in plot_mapping and extension == 'png':
         return plot_mapping[filename](request)
